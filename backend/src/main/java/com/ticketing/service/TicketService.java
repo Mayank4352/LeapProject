@@ -121,7 +121,8 @@ public class TicketService {
             return true;
         }
         if (user.getRole() == Role.SUPPORT_AGENT) {
-            return ticket.getAssignee() == null || ticket.getAssignee().equals(user);
+            // Support agents can only access tickets assigned to them
+            return ticket.getAssignee() != null && ticket.getAssignee().equals(user);
         }
         return ticket.getCreator().equals(user);
     }

@@ -28,21 +28,51 @@ export default function TicketDetail() {
   const [feedback, setFeedback] = useState('')
   const [showRating, setShowRating] = useState(false)
 
-  const { data: ticket, isLoading } = useQuery(
+  const { data: ticket, isLoading, error } = useQuery(
     ['ticket', ticketId],
-    () => ticketAPI.getTicket(ticketId),
-    { enabled: !!ticketId }
+    async () => {
+      console.log('Fetching ticket with ID:', ticketId)
+      const response = await ticketAPI.getTicket(ticketId)
+      console.log('Ticket response:', response)
+      return response.data
+    },
+    { 
+      enabled: !!ticketId && !isNaN(ticketId),
+      retry: 1,
+      onError: (error: any) => {
+        console.error('Error fetching ticket:', error)
+        console.error('Error details:', error.response?.data)
+        
+        // Don't show toast for 403 errors - we'll handle them in the UI
+        if (error.response?.status !== 403) {
+          toast.error(`Failed to load ticket: ${error.response?.data?.message || error.message}`)
+        }
+      }
+    }
   )
 
   const { data: comments = [] } = useQuery(
     ['comments', ticketId],
-    () => ticketAPI.getComments(ticketId),
-    { enabled: !!ticketId }
+    async () => {
+      console.log('Fetching comments for ticket:', ticketId)
+      const response = await ticketAPI.getComments(ticketId)
+      console.log('Comments response:', response)
+      return response.data
+    },
+    { 
+      enabled: !!ticketId && !isNaN(ticketId),
+      onError: (error: any) => {
+        console.error('Error fetching comments:', error)
+      }
+    }
   )
 
   const { data: supportAgents = [] } = useQuery(
     'support-agents',
-    adminAPI.getSupportAgents,
+    async () => {
+      const response = await adminAPI.getSupportAgents()
+      return response.data
+    },
     { enabled: user?.role === 'ADMIN' || user?.role === 'SUPPORT_AGENT' }
   )
 
@@ -146,17 +176,17 @@ export default function TicketDetail() {
   }
 
   const canModifyTicket = () => {
-    if (!ticket?.data || !user) return false
+    if (!ticket || !user) return false
     if (user.role === 'ADMIN') return true
-    if (user.role === 'SUPPORT_AGENT') return ticket.data.assignee?.id === user.id
-    return ticket.data.creator.id === user.id
+    if (user.role === 'SUPPORT_AGENT') return ticket.assignee?.id === user.id
+    return ticket.creator.id === user.id
   }
 
   const canRateTicket = () => {
-    if (!ticket?.data || !user) return false
-    return ticket.data.creator.id === user.id && 
-           (ticket.data.status === 'RESOLVED' || ticket.data.status === 'CLOSED') &&
-           !ticket.data.rating
+    if (!ticket || !user) return false
+    return ticket.creator.id === user.id && 
+           (ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') &&
+           !ticket.rating
   }
 
   if (isLoading) {
@@ -175,6 +205,9 @@ export default function TicketDetail() {
                   <div className="h-32 bg-gray-200 rounded"></div>
                 </div>
               </div>
+              <div className="mt-4 text-center text-sm text-gray-500">
+                Loading ticket #{ticketId}...
+              </div>
             </div>
           </div>
         </div>
@@ -182,7 +215,73 @@ export default function TicketDetail() {
     )
   }
 
-  if (!ticket?.data) {
+  if (error) {
+    const is403Error = error.response?.status === 403
+    
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen bg-gray-50">
+          <Navbar />
+          <div className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div className="px-4 py-6 sm:px-0">
+              <div className="text-center">
+                {is403Error ? (
+                  <>
+                    <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                      <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                    </div>
+                    <h3 className="mt-2 text-lg font-medium text-gray-900">Access Denied</h3>
+                    {user?.role === 'SUPPORT_AGENT' ? (
+                      <p className="mt-1 text-sm text-gray-500">
+                        This ticket is not assigned to you. Please ask an admin to assign this ticket to you if you need to work on it.
+                      </p>
+                    ) : (
+                      <p className="mt-1 text-sm text-gray-500">
+                        You are not allowed to view this ticket. You can only view tickets that you have created.
+                      </p>
+                    )}
+                    <div className="mt-6">
+                      <button
+                        onClick={() => router.push('/tickets')}
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+                      >
+                        View My Tickets
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-lg font-medium text-gray-900">Error Loading Ticket</h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Failed to load ticket #{ticketId}. Please try again.
+                    </p>
+                    <div className="mt-4 space-x-2">
+                      <button
+                        onClick={() => window.location.reload()}
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+                      >
+                        Retry
+                      </button>
+                      <button
+                        onClick={() => router.back()}
+                        className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                      >
+                        Go Back
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ProtectedRoute>
+    )
+  }
+
+  if (!ticket) {
     return (
       <ProtectedRoute>
         <div className="min-h-screen bg-gray-50">
@@ -208,7 +307,7 @@ export default function TicketDetail() {
     )
   }
 
-  const ticketData = ticket.data
+  const ticketData = ticket
 
   return (
     <ProtectedRoute>
@@ -346,7 +445,7 @@ export default function TicketDetail() {
                 <div className="bg-white shadow rounded-lg p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">
                     <ChatBubbleLeftIcon className="h-5 w-5 inline mr-2" />
-                    Comments ({comments.data?.length || 0})
+                    Comments ({comments?.length || 0})
                   </h3>
                   
                   {/* Add Comment Form */}
@@ -371,7 +470,7 @@ export default function TicketDetail() {
 
                   {/* Comments List */}
                   <div className="space-y-4">
-                    {comments.data?.map((comment: any) => (
+                    {comments?.map((comment: any) => (
                       <div key={comment.id} className="border-l-4 border-primary-200 pl-4">
                         <div className="flex items-center space-x-2 mb-2">
                           <UserIcon className="h-4 w-4 text-gray-400" />
@@ -385,7 +484,7 @@ export default function TicketDetail() {
                         <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
                       </div>
                     ))}
-                    {(!comments.data || comments.data.length === 0) && (
+                    {(!comments || comments.length === 0) && (
                       <p className="text-gray-500 text-sm">No comments yet.</p>
                     )}
                   </div>
@@ -479,7 +578,7 @@ export default function TicketDetail() {
                             value={ticketData.assignee?.id || ''}
                           >
                             <option value="">Unassigned</option>
-                            {supportAgents.data?.map((agent: any) => (
+                            {supportAgents?.map((agent: any) => (
                               <option key={agent.id} value={agent.id}>
                                 {agent.firstName} {agent.lastName}
                               </option>

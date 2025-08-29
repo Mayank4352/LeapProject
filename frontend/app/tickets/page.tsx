@@ -21,17 +21,23 @@ export default function Tickets() {
 
   const { data: tickets = [], isLoading } = useQuery(
     ['tickets', searchTerm, statusFilter, priorityFilter],
-    () => ticketAPI.searchTickets({
-      search: searchTerm || undefined,
-      status: statusFilter || undefined,
-      priority: priorityFilter || undefined,
-    }),
+    async () => {
+      const response = await ticketAPI.searchTickets({
+        search: searchTerm || undefined,
+        status: statusFilter || undefined,
+        priority: priorityFilter || undefined,
+      })
+      return response.data
+    },
     { keepPreviousData: true }
   )
 
   const { data: supportAgents = [] } = useQuery(
     'support-agents',
-    adminAPI.getSupportAgents,
+    async () => {
+      const response = await adminAPI.getSupportAgents()
+      return response.data
+    },
     { enabled: user?.role === 'ADMIN' || user?.role === 'SUPPORT_AGENT' }
   )
 
@@ -148,9 +154,9 @@ export default function Tickets() {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
                   <p className="mt-2 text-sm text-gray-500">Loading tickets...</p>
                 </div>
-              ) : tickets.data?.length > 0 ? (
+              ) : tickets?.length > 0 ? (
                 <ul className="divide-y divide-gray-200">
-                  {tickets.data.map((ticket: any) => (
+                  {tickets.map((ticket: any) => (
                     <li key={ticket.id}>
                       <Link
                         href={`/tickets/${ticket.id}`}

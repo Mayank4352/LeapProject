@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
-import { authAPI } from '@/services/api'
+import { authAPI } from '../services/api'
 import toast from 'react-hot-toast'
 
 interface User {

@@ -1,5 +1,7 @@
 package com.ticketing.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -24,10 +26,12 @@ public class Attachment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id", nullable = false)
+    @JsonBackReference
     private Ticket ticket;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by", nullable = false)
+    @JsonIgnoreProperties({"password", "authorities", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled"})
     private User uploadedBy;
 
     @Column(name = "uploaded_at")

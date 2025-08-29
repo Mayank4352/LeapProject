@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import ProtectedRoute from '@/components/ProtectedRoute'
-import Navbar from '@/components/Navbar'
-import { ticketAPI } from '@/services/api'
+import ProtectedRoute from '../../../components/ProtectedRoute'
+import Navbar from '../../../components/Navbar'
+import { ticketAPI } from '../../../services/api'
 import toast from 'react-hot-toast'
 
 export default function NewTicket() {

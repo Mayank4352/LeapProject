@@ -14,8 +14,12 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = Cookies.get('token')
+    console.log('Token from cookies:', token ? 'Present' : 'Missing')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
+      console.log('Authorization header set:', config.headers.Authorization?.substring(0, 20) + '...')
+    } else {
+      console.log('No token found in cookies')
     }
     return config
   },
@@ -29,9 +33,15 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      Cookies.remove('token')
-      Cookies.remove('user')
-      window.location.href = '/login'
+      // Only redirect if we're not already on login page
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        Cookies.remove('token')
+        Cookies.remove('user')
+        window.location.href = '/login'
+      }
+    } else if (error.response?.status === 403) {
+      // Don't sign out on 403 - let the component handle the permission error
+      console.log('Access denied - user lacks permission for this resource')
     }
     return Promise.reject(error)
   }

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { authAPI } from '@/services/api'
+import { authAPI } from '../../services/api'
 import toast from 'react-hot-toast'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 

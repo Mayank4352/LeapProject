@@ -202,8 +202,40 @@ ticketing-system/
 
 ## 🚀 Deployment
 
-### Backend Deployment
+### Using Docker Compose (Recommended)
+
+1. **Set up environment variables**:
 ```bash
+# Copy the example environment file
+cp backend/.env.example backend/.env
+
+# Edit the .env file with your actual values
+DB_PASSWORD=your_secure_password
+JWT_SECRET=your_jwt_secret_key
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+```
+
+2. **Deploy with Docker Compose**:
+```bash
+# Build and start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Manual Deployment
+
+#### Backend Deployment
+```bash
+# Set environment variables
+export DB_PASSWORD=your_secure_password
+export JWT_SECRET=your_jwt_secret_key
+
 # Build JAR file
 mvn clean package
 
@@ -211,7 +243,7 @@ mvn clean package
 java -jar target/ticketing-system-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
 ```
 
-### Frontend Deployment
+#### Frontend Deployment
 ```bash
 # Build for production
 npm run build

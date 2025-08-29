@@ -2,9 +2,9 @@ spring:
   application:
     name: ticketing-system
   datasource:
-    url: jdbc:postgresql://localhost:5432/ticketing_db
-    username: postgres
-    password: Access@#1701
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,11 +14,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -27,11 +30,11 @@ spring:
             enable: true
 
 server:
-  port: 8080
+  port: ${SERVER_PORT}
 
 jwt:
-  secret: mySecretKey123456789012345678901234567890
-  expiration: 86400000 # 24 hours
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
 
 logging:
   level:

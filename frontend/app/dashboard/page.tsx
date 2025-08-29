@@ -1,10 +1,10 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
-import ProtectedRoute from '@/components/ProtectedRoute'
-import Navbar from '@/components/Navbar'
+import { useAuth } from '../../contexts/AuthContext'
+import ProtectedRoute from '../../components/ProtectedRoute'
+import Navbar from '../../components/Navbar'
 import { useQuery } from 'react-query'
-import { ticketAPI, adminAPI } from '@/services/api'
+import { ticketAPI, adminAPI } from '../../services/api'
 import { 
   TicketIcon, 
   ExclamationTriangleIcon,
@@ -42,7 +42,7 @@ export default function Dashboard() {
       }
     }
     
-    const userTickets = tickets.data || []
+    const userTickets = (tickets as any)?.data || []
     return {
       totalTickets: userTickets.length,
       openTickets: userTickets.filter((t: any) => t.status === 'OPEN').length,
@@ -53,7 +53,7 @@ export default function Dashboard() {
   }
 
   const stats = getStats()
-  const recentTickets = (tickets.data || []).slice(0, 5)
+  const recentTickets = ((tickets as any)?.data || []).slice(0, 5)
 
   const statCards = [
     {
@@ -144,20 +144,20 @@ export default function Dashboard() {
                   <div className="space-y-3">
                     <Link
                       href="/tickets/new"
-                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       Create New Ticket
                     </Link>
                     <Link
                       href="/tickets"
-                      className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                      className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       View All Tickets
                     </Link>
                     {user?.role === 'ADMIN' && (
                       <Link
                         href="/admin"
-                        className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                        className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
                         Admin Panel
                       </Link>
