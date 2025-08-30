@@ -24,8 +24,8 @@ export default function AdminPanel() {
   const [editingUser, setEditingUser] = useState<any>(null)
 
   const { data: stats } = useQuery('admin-stats', adminAPI.getStats)
-  const { data: users = [] } = useQuery('admin-users', adminAPI.getUsers)
-  const { data: tickets = [] } = useQuery('admin-tickets', adminAPI.getAllTickets)
+  const { data: users } = useQuery('admin-users', adminAPI.getUsers)
+  const { data: tickets } = useQuery('admin-tickets', adminAPI.getAllTickets)
 
   const deleteUserMutation = useMutation(
     (userId: number) => adminAPI.deleteUser(userId),
@@ -260,7 +260,7 @@ export default function AdminPanel() {
 
                 <div className="bg-white shadow overflow-hidden sm:rounded-md">
                   <ul className="divide-y divide-gray-200">
-                    {users.data?.map((user: any) => (
+                    {users?.data?.map((user: any) => (
                       <li key={user.id} className="px-6 py-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
@@ -320,7 +320,7 @@ export default function AdminPanel() {
 
                 <div className="bg-white shadow overflow-hidden sm:rounded-md">
                   <ul className="divide-y divide-gray-200">
-                    {tickets.data?.map((ticket: any) => (
+                    {tickets?.data?.map((ticket: any) => (
                       <li key={ticket.id} className="px-6 py-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
