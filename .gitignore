@@ -1,0 +1,32 @@
+# Dependencies
+frontend/node_modules/
+backend/target/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+#Environment variables
+.env
+.env.local
+.env.production
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# Maven
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Database
+*.db
+*.sqlite
