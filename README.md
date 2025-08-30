@@ -1,21 +1,40 @@
-# TicketDesk - Full-Stack Ticketing System
+# TicketDesk - IT Support & Customer Service Portal
 
-A comprehensive IT support and customer service ticketing system built with Spring Boot and Next.js.
+A modern, full-stack ticketing system designed for efficient IT support and customer service management. Built with Spring Boot backend and Next.js frontend for optimal performance and user experience.
 
-## 🚀 Features
+## ✨ Key Features
 
-### ✅ Must-Have Features (Implemented)
-- **Authentication & Authorization**: JWT-based login/logout with role-based access control
-- **User Dashboard**: Create tickets, view status, add comments, track history
-- **Ticket Management**: Complete lifecycle (Open → In Progress → Resolved → Closed)
-- **Admin Panel**: User management, ticket oversight, system monitoring
-- **Access Control**: Role-based permissions (User, Support Agent, Admin)
+### 🔐 Authentication & Security
+- JWT-based authentication with secure token handling
+- Role-based access control (User, Support Agent, Admin)
+- BCrypt password encryption
+- Session management and automatic logout
 
-### 🌟 Good-to-Have Features (Implemented)
-- **Email Notifications**: Automated emails for ticket events
-- **Search & Filter**: Advanced ticket filtering and search
-- **Ticket Prioritization**: Priority levels (Low, Medium, High, Urgent)
-- **Rating System**: Rate ticket resolutions with feedback
+### 🎫 Ticket Management
+- Complete ticket lifecycle: Open → In Progress → Resolved → Closed
+- Priority levels: Low, Medium, High, Urgent
+- Real-time status updates with color-coded indicators
+- Comment system for communication
+- Ticket assignment and reassignment
+- Advanced search and filtering capabilities
+
+### 👥 User Management
+- Multi-role user system (Admin, Support Agent, User)
+- User dashboard with personalized ticket views
+- Admin panel for user management and system oversight
+- Profile management and settings
+
+### 📧 Communication & Notifications
+- Email notifications for ticket updates
+- In-app comment system
+- Rating and feedback system for resolved tickets
+- Real-time status updates
+
+### 🎨 Modern UI/UX
+- Responsive design for all devices
+- Clean, intuitive interface
+- Dark/light theme support
+- Accessible components with proper ARIA labels
 
 ## 🧰 Tech Stack
 
@@ -48,10 +67,6 @@ A comprehensive IT support and customer service ticketing system built with Spri
 -- Create database
 CREATE DATABASE ticketing_db;
 
--- Create user (optional)
-CREATE USER ticketing_user WITH PASSWORD 'your_password';
-GRANT ALL PRIVILEGES ON DATABASE ticketing_db TO ticketing_user;
-```
 
 ### 2. Backend Setup
 
@@ -92,42 +107,34 @@ The system creates default users on first startup:
 
 | Role | Username | Password | Email |
 |------|----------|----------|-------|
-| Admin | `admin` | `password123` | admin@ticketdesk.com |
-| Support Agent | `support` | `password123` | support@ticketdesk.com |
+| Admin | `admin` | `admin@4352` | admin@ticketdesk.com |
+| Support Agent | `support` | `support@4352` | support@ticketdesk.com |
 | User | `user` | `password123` | user@ticketdesk.com |
 
 ## 🔧 Configuration
 
-### Email Configuration (Optional)
+### Environment Variables
 
-Update `backend/src/main/resources/application.yml`:
+Create a `.env` file in the backend directory:
 
-```yaml
-spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME:your-email@gmail.com}
-    password: ${MAIL_PASSWORD:your-app-password}
-```
-
-Set environment variables:
 ```bash
-export MAIL_USERNAME=your-email@gmail.com
-export MAIL_PASSWORD=your-app-password
-```
+# Database Configuration
+DB_PASSWORD=your_db_password
+DB_USERNAME=your_db_username
+DB_URL=your_db_url
 
-### Database Configuration
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRATION=set_your_jwt_expiration
 
-Update connection details in `application.yml`:
+# Email Configuration (Optional)
+MAIL_HOST=set_your_mail_host
+MAIL_PORT=set_your_mail_port
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
 
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/ticketing_db
-    username: postgres
-    password: your_password
-```
+# Server Configuration
+SERVER_PORT=set_your_server_port
 
 ## 🎯 Usage Guide
 
@@ -202,45 +209,21 @@ ticketing-system/
 
 ## 🚀 Deployment
 
-### Using Docker Compose (Recommended)
-
-1. **Set up environment variables**:
-```bash
-# Copy the example environment file
-cp backend/.env.example backend/.env
-
-# Edit the .env file with your actual values
-DB_PASSWORD=your_secure_password
-JWT_SECRET=your_jwt_secret_key
-MAIL_USERNAME=your_email@gmail.com
-MAIL_PASSWORD=your_app_password
-```
-
-2. **Deploy with Docker Compose**:
-```bash
-# Build and start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-### Manual Deployment
+### Production Deployment
 
 #### Backend Deployment
 ```bash
-# Set environment variables
-export DB_PASSWORD=your_secure_password
-export JWT_SECRET=your_jwt_secret_key
-
 # Build JAR file
 mvn clean package
 
-# Run with production profile
-java -jar target/ticketing-system-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+# Set production environment variables
+export DB_PASSWORD=your_secure_password
+export JWT_SECRET=your_jwt_secret_key
+export MAIL_USERNAME=your_email@gmail.com
+export MAIL_PASSWORD=your_app_password
+
+# Run application
+java -jar target/ticketing-system-0.0.1-SNAPSHOT.jar
 ```
 
 #### Frontend Deployment
@@ -252,22 +235,23 @@ npm run build
 npm start
 ```
 
-## 🤝 Contributing
+## 🐛 Troubleshooting
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+### Common Issues
 
+**Backend won't start:**
+- Check PostgreSQL is running
+- Verify database credentials in `.env`
+- Ensure Java 17+ is installed
 
-## 🆘 Support
+**Frontend connection issues:**
+- Verify backend is running on port 8080
+- Check CORS configuration
+- Ensure API endpoints are accessible
 
-For support and questions:
-- Create an issue in the repository
-- Contact the development team
-- Check the documentation
+**Email notifications not working:**
+- Verify SMTP credentials
+- Check firewall settings
+- Enable "Less secure app access" for Gmail
 
----
-
-**TicketDesk** - Streamlining IT support and customer service operations.
+**TicketDesk** - Modern IT support and customer service management made simple.
