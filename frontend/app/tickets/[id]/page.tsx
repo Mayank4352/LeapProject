@@ -27,6 +27,8 @@ export default function TicketDetail() {
   const [rating, setRating] = useState(0)
   const [feedback, setFeedback] = useState('')
   const [showRating, setShowRating] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState('')
+  const [selectedAssignee, setSelectedAssignee] = useState('')
 
   const { data: ticket, isLoading, error } = useQuery(
     ['ticket', ticketId],
@@ -73,7 +75,7 @@ export default function TicketDetail() {
       const response = await adminAPI.getSupportAgents()
       return response.data
     },
-    { enabled: user?.role === 'ADMIN' || user?.role === 'SUPPORT_AGENT' }
+    { enabled: user?.role === 'ADMIN' }
   )
 
   const addCommentMutation = useMutation(
@@ -136,6 +138,23 @@ export default function TicketDetail() {
     e.preventDefault()
     if (!newComment.trim()) return
     addCommentMutation.mutate(newComment)
+  }
+
+  const handleUpdateTicket = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Update status if changed
+    if (selectedStatus && selectedStatus !== ticketData.status) {
+      updateStatusMutation.mutate(selectedStatus)
+    }
+    
+    // Update assignment if changed
+    if (selectedAssignee !== String(ticketData.assignee?.id || '')) {
+      const assigneeId = selectedAssignee ? parseInt(selectedAssignee) : null
+      if (assigneeId) {
+        assignTicketMutation.mutate(assigneeId)
+      }
+    }
   }
 
   const handleStatusChange = (status: string) => {
@@ -542,27 +561,49 @@ export default function TicketDetail() {
                   <div className="bg-white shadow rounded-lg p-6">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Actions</h3>
                     
-                    {/* Status Actions */}
-                    <div className="space-y-3">
+                    <form onSubmit={handleUpdateTicket} className="space-y-4">
+                      {/* Status Actions */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Update Status
                         </label>
                         <div className="grid grid-cols-2 gap-2">
-                          {['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].map((status) => (
-                            <button
-                              key={status}
-                              onClick={() => handleStatusChange(status)}
-                              disabled={ticketData.status === status || updateStatusMutation.isLoading}
-                              className={`px-3 py-2 text-xs font-medium rounded-md border ${
-                                ticketData.status === status
-                                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                  : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300'
-                              }`}
-                            >
-                              {status.replace('_', ' ')}
-                            </button>
-                          ))}
+                          {['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].map((status) => {
+                            const isSelected = selectedStatus === status || (!selectedStatus && ticketData.status === status)
+                            const getStatusStyle = () => {
+                              const baseStyle = 'px-3 py-2 text-xs font-medium rounded-md border-2 transition-all duration-200'
+                              
+                              if (status === 'OPEN') {
+                                return isSelected 
+                                  ? `${baseStyle} bg-blue-100 text-blue-800 border-blue-400 ring-2 ring-blue-200`
+                                  : `${baseStyle} bg-white text-blue-700 border-blue-300 hover:bg-blue-50`
+                              } else if (status === 'IN_PROGRESS') {
+                                return isSelected
+                                  ? `${baseStyle} bg-yellow-100 text-yellow-800 border-yellow-400 ring-2 ring-yellow-200`
+                                  : `${baseStyle} bg-white text-yellow-700 border-yellow-300 hover:bg-yellow-50`
+                              } else if (status === 'RESOLVED') {
+                                return isSelected
+                                  ? `${baseStyle} bg-green-100 text-green-800 border-green-400 ring-2 ring-green-200`
+                                  : `${baseStyle} bg-white text-green-700 border-green-300 hover:bg-green-50`
+                              } else if (status === 'CLOSED') {
+                                return isSelected
+                                  ? `${baseStyle} bg-red-100 text-red-800 border-red-400 ring-2 ring-red-200`
+                                  : `${baseStyle} bg-white text-red-700 border-red-300 hover:bg-red-50`
+                              }
+                              return `${baseStyle} bg-white text-gray-700 border-gray-300 hover:bg-gray-50`
+                            }
+                            
+                            return (
+                              <button
+                                key={status}
+                                type="button"
+                                onClick={() => setSelectedStatus(status)}
+                                className={getStatusStyle()}
+                              >
+                                {status.replace('_', ' ')}
+                              </button>
+                            )
+                          })}
                         </div>
                       </div>
 
@@ -573,9 +614,9 @@ export default function TicketDetail() {
                             Assign to
                           </label>
                           <select
+                            value={selectedAssignee || ticketData.assignee?.id || ''}
+                            onChange={(e) => setSelectedAssignee(e.target.value)}
                             className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                            onChange={(e) => e.target.value && handleAssign(parseInt(e.target.value))}
-                            value={ticketData.assignee?.id || ''}
                           >
                             <option value="">Unassigned</option>
                             {supportAgents?.map((agent: any) => (
@@ -586,7 +627,18 @@ export default function TicketDetail() {
                           </select>
                         </div>
                       )}
-                    </div>
+
+                      {/* Update Button */}
+                      <div className="flex justify-end">
+                        <button
+                          type="submit"
+                          disabled={updateStatusMutation.isLoading || assignTicketMutation.isLoading}
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {(updateStatusMutation.isLoading || assignTicketMutation.isLoading) ? 'Updating...' : 'Update'}
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 )}
               </div>

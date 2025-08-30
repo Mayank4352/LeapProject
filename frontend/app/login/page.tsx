@@ -102,14 +102,6 @@ export default function Login() {
           </div>
         </form>
 
-        <div className="mt-8 p-4 bg-blue-50 rounded-md">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Demo Accounts:</h3>
-          <div className="text-xs text-blue-700 space-y-1">
-            <div><strong>Admin:</strong> admin / password123</div>
-            <div><strong>Support:</strong> support / password123</div>
-            <div><strong>User:</strong> user / password123</div>
-          </div>
-        </div>
       </div>
     </div>
   )

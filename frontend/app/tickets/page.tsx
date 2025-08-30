@@ -38,7 +38,7 @@ export default function Tickets() {
       const response = await adminAPI.getSupportAgents()
       return response.data
     },
-    { enabled: user?.role === 'ADMIN' || user?.role === 'SUPPORT_AGENT' }
+    { enabled: user?.role === 'ADMIN' }
   )
 
   const getStatusColor = (status: string) => {
