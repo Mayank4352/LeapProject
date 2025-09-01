@@ -18,24 +18,27 @@ public class DatabaseConfig {
         
         System.out.println("=== DatabaseConfig called ===");
         System.out.println("DATABASE_URL: " + databaseUrl);
+        System.out.println("Raw URI info:");
         
         if (databaseUrl != null && databaseUrl.startsWith("postgresql://")) {
             // Convert PostgreSQL URL to JDBC URL
             try {
                 URI uri = new URI(databaseUrl);
                 String host = uri.getHost();
-                int port = uri.getPort() == -1 ? 5432 : uri.getPort(); // Default to 5432 if port is -1
+                int rawPort = uri.getPort();
+                int port = rawPort == -1 ? 5432 : rawPort; // Default to 5432 if port is -1
                 String database = uri.getPath().substring(1); // Remove leading '/'
                 String username = uri.getUserInfo().split(":")[0];
                 String password = uri.getUserInfo().split(":")[1];
                 
-                String jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", host, port, database);
-                
-                System.out.println("Converted JDBC URL: " + jdbcUrl);
+                System.out.println("Raw port from URI: " + rawPort);
+                System.out.println("Final port used: " + port);
                 System.out.println("Host: " + host);
-                System.out.println("Port: " + port);
                 System.out.println("Database: " + database);
                 System.out.println("Username: " + username);
+                
+                String jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", host, port, database);
+                System.out.println("Final JDBC URL: " + jdbcUrl);
                 
                 return DataSourceBuilder.create()
                         .url(jdbcUrl)
