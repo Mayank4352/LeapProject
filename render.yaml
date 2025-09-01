@@ -6,7 +6,7 @@ services:
     dockerfilePath: ./backend/Dockerfile
     plan: free
     envVars:
-      - key: DB_URL
+      - key: DATABASE_URL
         fromDatabase:
           name: ticketing-db
           property: connectionString
@@ -18,6 +18,18 @@ services:
         fromDatabase:
           name: ticketing-db
           property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: ticketing-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: ticketing-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: ticketing-db
+          property: database
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRATION
