@@ -3,8 +3,7 @@ services:
   - type: web
     name: ticketing-backend
     env: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
     plan: free
     envVars:
       - key: DB_URL
@@ -39,8 +38,7 @@ services:
   - type: web
     name: ticketing-frontend
     env: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: ./frontend
+    dockerfilePath: ./frontend/Dockerfile
     plan: free
     envVars:
       - key: NEXT_PUBLIC_API_URL
