@@ -16,6 +16,7 @@ public class DatabaseConfig {
     public DataSource dataSource() {
         String databaseUrl = System.getenv("DATABASE_URL");
         
+        System.out.println("=== DatabaseConfig called ===");
         System.out.println("DATABASE_URL: " + databaseUrl);
         
         if (databaseUrl != null && databaseUrl.startsWith("postgresql://")) {
@@ -23,7 +24,7 @@ public class DatabaseConfig {
             try {
                 URI uri = new URI(databaseUrl);
                 String host = uri.getHost();
-                int port = uri.getPort();
+                int port = uri.getPort() == -1 ? 5432 : uri.getPort(); // Default to 5432 if port is -1
                 String database = uri.getPath().substring(1); // Remove leading '/'
                 String username = uri.getUserInfo().split(":")[0];
                 String password = uri.getUserInfo().split(":")[1];
@@ -31,6 +32,9 @@ public class DatabaseConfig {
                 String jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", host, port, database);
                 
                 System.out.println("Converted JDBC URL: " + jdbcUrl);
+                System.out.println("Host: " + host);
+                System.out.println("Port: " + port);
+                System.out.println("Database: " + database);
                 System.out.println("Username: " + username);
                 
                 return DataSourceBuilder.create()
@@ -45,6 +49,7 @@ public class DatabaseConfig {
                 throw new RuntimeException("Failed to parse DATABASE_URL: " + databaseUrl, e);
             }
         } else {
+            System.out.println("Using individual env variables for local development");
             // Use individual environment variables for local development
             String host = System.getenv().getOrDefault("DB_HOST", "localhost");
             String port = System.getenv().getOrDefault("DB_PORT", "5432");
