@@ -16,6 +16,8 @@ public class DatabaseConfig {
     public DataSource dataSource() {
         String databaseUrl = System.getenv("DATABASE_URL");
         
+        System.out.println("DATABASE_URL: " + databaseUrl);
+        
         if (databaseUrl != null && databaseUrl.startsWith("postgresql://")) {
             // Convert PostgreSQL URL to JDBC URL
             try {
@@ -28,6 +30,9 @@ public class DatabaseConfig {
                 
                 String jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", host, port, database);
                 
+                System.out.println("Converted JDBC URL: " + jdbcUrl);
+                System.out.println("Username: " + username);
+                
                 return DataSourceBuilder.create()
                         .url(jdbcUrl)
                         .username(username)
@@ -35,6 +40,8 @@ public class DatabaseConfig {
                         .driverClassName("org.postgresql.Driver")
                         .build();
             } catch (Exception e) {
+                System.err.println("Failed to parse DATABASE_URL: " + databaseUrl);
+                e.printStackTrace();
                 throw new RuntimeException("Failed to parse DATABASE_URL: " + databaseUrl, e);
             }
         } else {
@@ -46,6 +53,9 @@ public class DatabaseConfig {
             String password = System.getenv().getOrDefault("DB_PASSWORD", "password");
             
             String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", host, port, database);
+            
+            System.out.println("Using individual env vars - JDBC URL: " + jdbcUrl);
+            System.out.println("Username: " + username);
             
             return DataSourceBuilder.create()
                     .url(jdbcUrl)
