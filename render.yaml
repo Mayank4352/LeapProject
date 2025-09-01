@@ -33,10 +33,7 @@ services:
     plan: free
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: ticketing-backend
-          property: host
+        value: "https://ticketing-backend-mh0k.onrender.com/api"
 
 databases:
   - name: ticketing-db
