@@ -31,15 +31,6 @@ spring:
 server:
   port: ${SERVER_PORT}
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: when-authorized
-
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
