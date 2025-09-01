@@ -1,0 +1,63 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: ticketing-db
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.postgres
+
+  # Backend API
+  - type: web
+    name: ticketing-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    plan: free
+    envVars:
+      - key: DB_URL
+        fromDatabase:
+          name: ticketing-db
+          property: connectionString
+      - key: DB_USERNAME
+        fromDatabase:
+          name: ticketing-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: ticketing-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: 86400000
+      - key: SERVER_PORT
+        value: 8080
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        sync: false # Set manually in Render dashboard
+      - key: MAIL_PASSWORD
+        sync: false # Set manually in Render dashboard
+    healthCheckPath: /actuator/health
+
+  # Frontend
+  - type: web
+    name: ticketing-frontend
+    env: docker
+    dockerfilePath: ./frontend/Dockerfile
+    plan: free
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: ticketing-backend
+          property: host
+    buildCommand: npm run build
+    startCommand: npm start
+
+databases:
+  - name: ticketing-db
+    databaseName: ticketing_db
+    user: ticketing_user
+    plan: free

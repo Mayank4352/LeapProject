@@ -13,6 +13,7 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+DEPLOY_RENDER.md
 
 #Environment variables
 .env

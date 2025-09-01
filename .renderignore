@@ -1,0 +1,12 @@
+# Render ignore file
+
+node_modules/
+target/
+.mvn/
+_.log
+.env_
+!.env.production
+README.md
+.git/
+.github/
+docs/
