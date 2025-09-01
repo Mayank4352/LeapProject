@@ -1,6 +1,5 @@
 package com.ticketing.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -14,7 +13,6 @@ public class DatabaseConfig {
 
     @Bean
     @Primary
-    @ConfigurationProperties("spring.datasource")
     public DataSource dataSource() {
         String databaseUrl = System.getenv("DATABASE_URL");
         
@@ -40,7 +38,7 @@ public class DatabaseConfig {
                 throw new RuntimeException("Failed to parse DATABASE_URL: " + databaseUrl, e);
             }
         } else {
-            // Use individual environment variables
+            // Use individual environment variables for local development
             String host = System.getenv().getOrDefault("DB_HOST", "localhost");
             String port = System.getenv().getOrDefault("DB_PORT", "5432");
             String database = System.getenv().getOrDefault("DB_NAME", "ticketing_db");
