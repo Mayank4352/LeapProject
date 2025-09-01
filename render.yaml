@@ -1,11 +1,4 @@
 services:
-  # PostgreSQL Database
-  - type: pserv
-    name: ticketing-db
-    env: docker
-    plan: free
-    dockerfilePath: ./Dockerfile.postgres
-
   # Backend API
   - type: web
     name: ticketing-backend
@@ -28,13 +21,13 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRATION
-        value: 86400000
+        value: "86400000"
       - key: SERVER_PORT
-        value: 8080
+        value: "8080"
       - key: MAIL_HOST
-        value: smtp.gmail.com
+        value: "smtp.gmail.com"
       - key: MAIL_PORT
-        value: 587
+        value: "587"
       - key: MAIL_USERNAME
         sync: false # Set manually in Render dashboard
       - key: MAIL_PASSWORD
@@ -53,8 +46,6 @@ services:
           type: web
           name: ticketing-backend
           property: host
-    buildCommand: npm run build
-    startCommand: npm start
 
 databases:
   - name: ticketing-db
